@@ -4,29 +4,45 @@
 <title>SNAKE GAME</title>
 <style>
 #box {
-	width : 500px;
-	height : 500px;
+	width : 600px;
+	height : 600px;
 	margin: 20px 100px;
-	border : 1px solid #F00;
+	border : 1px solid #000;
 	position : relative;
+	background-color: #E0FFFF;
      }
+#fruit {
+	  width: 12px;
+	  height: 12px;
+	  background-color: #F00;
+	}
+.snake {
+	  width: 12px;
+	  height: 12px;
+	  background-color: #0F0;
+	} 
+#direction {
+	      float:right;
+	}
 </style>
 <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
 <script>
 $(document).ready(function(){
+	var old_direct = 37;
 	function move(direction){
+		//Fail if auto-crash:need code here
 		switch (direction) {
 		case 37:
-			posSnake.unshift([posSnake[0][0]-14,posSnake[0][1]]);
+			posSnake.unshift([posSnake[0][0]-12,posSnake[0][1]]);
 			break;
 		case 38:
-			posSnake.unshift([posSnake[0][0],posSnake[0][1]-20]);
+			posSnake.unshift([posSnake[0][0],posSnake[0][1]-12]);
 			break;
 		case 39:
-			posSnake.unshift([posSnake[0][0]+14,posSnake[0][1]]);
+			posSnake.unshift([posSnake[0][0]+12,posSnake[0][1]]);
 			break;
 		case 40:
-			posSnake.unshift([posSnake[0][0],posSnake[0][1]+20]);
+			posSnake.unshift([posSnake[0][0],posSnake[0][1]+12]);
 			break;
 		}//end switch
 		posSnake.pop();
@@ -37,56 +53,80 @@ $(document).ready(function(){
 		});//end each
 	}
 	function produceFruit(){
-		var fruitW=$fruit.outerWidth(),
-		    fruitH=$fruit.outerHeight();
-		posL=Math.random()*(500-fruitW);
-		posT=Math.random()*(500-fruitH);
-		$fruit.css({'marginLeft':posL,'marginTop':posT,'position':'absolute'}).show();
+		posFruitL=Math.floor(Math.random()*49)*12;
+		posFruitT=Math.floor(Math.random()*49)*12;
+		$fruit.css({'marginLeft':posFruitL,'marginTop':posFruitT,'position':'absolute'}).show();
 	}
 	function crash(){
-		var res=(posSnake[0][0]<0 || posSnake[0][0]>500 || posSnake[0][1]<0 || posSnake[0][1]>500)
+		var res=(posSnake[0][0]<0 || posSnake[0][0]>598 || posSnake[0][1]<0 || posSnake[0][1]>598)
 		return res;
 	}
 	function addSnake(){
-		$fruit.after("<p class='snake'>Z</p>");
+		$fruit.after("<div class='snake'></div>");
+	}
+	function eatFruit(direction){
+		switch (direction) {
+		case 37:
+			posSnake.unshift([posSnake[0][0]-12,posSnake[0][1]]);
+			break;
+		case 38:
+			posSnake.unshift([posSnake[0][0],posSnake[0][1]-12]);
+			break;
+		case 39:
+			posSnake.unshift([posSnake[0][0]+12,posSnake[0][1]]);
+			break;
+		case 40:
+			posSnake.unshift([posSnake[0][0],posSnake[0][1]+12]);
+			break;
+		}//end switch
+		produceFruit();
+		addSnake();
+		move(direction);
+	}
+	function gameOver(){
+	
 	}
 	var $fruit=$('#fruit');
 //	$snakeFirst.hide();
 	$fruit.hide();
-	var posL,posT,posSnake=[],snake=[];
-	//$snakeFirst.show().css({'marginLeft':250,'marginTop':250,'position':'absolute'});
-	posSnake.push([250,250]);
+	var posFruitL,posFruitT,posSnake=[],snake=[];
+	posSnake.push([300,300]);
 	addSnake();
 	$('.snake').css({'marginLeft':posSnake[0][0],'marginTop':posSnake[0][1],'position':'absolute'});
 	$('html').click(function(){
 		produceFruit();
 		var currDirection=37;
-			if(! crash()){
-				setInterval(function(){
-				move(currDirection);
-				var posFirstL=posSnake[0][0]+($fruit.outerWidth())/2,
-				    posFirstT=posSnake[0][1]+($fruit.outerHeight())/2;
-				if(posFirstL > posL && posFirstL < (posL+$fruit.outerWidth()) && posFirstT > posT && posFirstT < (posT+$fruit.outerHeight())){
-					posSnake.unshift([posL,posT]);
-					addSnake();
-					//produceFruit();
-					//move(currDirection);
-				}
-				},250);//end interval
+			var gameOnGoing = setInterval(function(){
+				if(! crash()){
+					move(currDirection);
+					var posFirstL=posSnake[0][0],
+					    posFirstT=posSnake[0][1];
+					if(posFirstL == posFruitL && posFirstT == posFruitT){
+						eatFruit(currDirection);
+					}
 				$('html').keyup(function(e){
 					move(e.which);
 					currDirection=e.which;
 				});//end keyup
-			}else{
-				alert('FAIL');
-			}
+				}else{
+					alert('FAIL');
+					clearInterval(gameOnGoing);
+				}
+			},150);//end interval
 	});//end click 
 });//end ready
 </script>
 </head>
 <body>
 <div id='box'>
-	<p id='fruit'>M</p>
+	<div id='fruit'></div>  <!-- fruit is one small quare -->
+</div>
+<div id = 'direction'>
+	<p>Click Anywhere To Start The Game</p>
+	<p>Use Arrow Keys To Move Snake</p>
+</div>
+<div id='gameover'>
+	
 </div>
 </body>
 </html>
