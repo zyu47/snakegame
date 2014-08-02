@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+<meta charset='utf-8'>
+<title>SNAKE GAME</title>
+<style>
+#box {
+	width : 500px;
+	height : 500px;
+	margin: 20px 100px;
+	border : 1px solid #F00;
+	position : relative;
+     }
+</style>
+<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script>
+$(document).ready(function(){
+	function move(direction){
+		switch (direction) {
+		case 37:
+			posSnake.unshift([posSnake[0][0]-14,posSnake[0][1]]);
+			break;
+		case 38:
+			posSnake.unshift([posSnake[0][0],posSnake[0][1]-20]);
+			break;
+		case 39:
+			posSnake.unshift([posSnake[0][0]+14,posSnake[0][1]]);
+			break;
+		case 40:
+			posSnake.unshift([posSnake[0][0],posSnake[0][1]+20]);
+			break;
+		}//end switch
+		posSnake.pop();
+		var i=0;
+		$('.snake').each(function(){
+			$(this).css({'marginLeft':posSnake[i][0],'marginTop':posSnake[i][1],'position':'absolute'});
+			i+=1;
+		});//end each
+	}
+	function produceFruit(){
+		var fruitW=$fruit.outerWidth(),
+		    fruitH=$fruit.outerHeight();
+		posL=Math.random()*(500-fruitW);
+		posT=Math.random()*(500-fruitH);
+		$fruit.css({'marginLeft':posL,'marginTop':posT,'position':'absolute'}).show();
+	}
+	function crash(){
+		var res=(posSnake[0][0]<0 || posSnake[0][0]>500 || posSnake[0][1]<0 || posSnake[0][1]>500)
+		return res;
+	}
+	function addSnake(){
+		$fruit.after("<p class='snake'>Z</p>");
+	}
+	var $fruit=$('#fruit');
+//	$snakeFirst.hide();
+	$fruit.hide();
+	var posL,posT,posSnake=[],snake=[];
+	//$snakeFirst.show().css({'marginLeft':250,'marginTop':250,'position':'absolute'});
+	posSnake.push([250,250]);
+	addSnake();
+	$('.snake').css({'marginLeft':posSnake[0][0],'marginTop':posSnake[0][1],'position':'absolute'});
+	$('html').click(function(){
+		produceFruit();
+		var currDirection=37;
+			if(! crash()){
+				setInterval(function(){
+				move(currDirection);
+				var posFirstL=posSnake[0][0]+($fruit.outerWidth())/2,
+				    posFirstT=posSnake[0][1]+($fruit.outerHeight())/2;
+				if(posFirstL > posL && posFirstL < (posL+$fruit.outerWidth()) && posFirstT > posT && posFirstT < (posT+$fruit.outerHeight())){
+					posSnake.unshift([posL,posT]);
+					addSnake();
+					//produceFruit();
+					//move(currDirection);
+				}
+				},250);//end interval
+				$('html').keyup(function(e){
+					move(e.which);
+					currDirection=e.which;
+				});//end keyup
+			}else{
+				alert('FAIL');
+			}
+	});//end click 
+});//end ready
+</script>
+</head>
+<body>
+<div id='box'>
+	<p id='fruit'>M</p>
+</div>
+</body>
+</html>
