@@ -10,6 +10,7 @@
 	border : 1px solid #000;
 	position : relative;
 	background-color: #E0FFFF;
+	float:left;
      }
 #fruit {
 	  width: 12px;
@@ -58,7 +59,7 @@ $(document).ready(function(){
 		$fruit.css({'marginLeft':posFruitL,'marginTop':posFruitT,'position':'absolute'}).show();
 	}
 	function crash(){
-		var res=(posSnake[0][0]<0 || posSnake[0][0]>598 || posSnake[0][1]<0 || posSnake[0][1]>598)
+		var res=(posSnake[0][0]<0 || posSnake[0][0]>588 || posSnake[0][1]<0 || posSnake[0][1]>588)
 		return res;
 	}
 	function addSnake(){
@@ -86,28 +87,32 @@ $(document).ready(function(){
 	function gameOver(){
 	
 	}
+	function startGame(){
+		$('.snake').remove();
+		posSnake.length = 0;
+		snake.length = 0;
+		posSnake.push([300,300]);
+		addSnake();
+		$('.snake').css({'marginLeft':posSnake[0][0],'marginTop':posSnake[0][1],'position':'absolute'});
+		produceFruit();
+	}
 	var $fruit=$('#fruit');
 //	$snakeFirst.hide();
 	$fruit.hide();
 	var posFruitL,posFruitT,posSnake=[],snake=[];
-	posSnake.push([300,300]);
-	addSnake();
-	$('.snake').css({'marginLeft':posSnake[0][0],'marginTop':posSnake[0][1],'position':'absolute'});
 	$('html').click(function(){
-		produceFruit();
+		startGame();
 		var currDirection=37;
+		$('html').keyup(function(e){
+		//	move(e.which);
+			currDirection=e.which;
+		});//end keyup
 			var gameOnGoing = setInterval(function(){
 				if(! crash()){
-					move(currDirection);
-					var posFirstL=posSnake[0][0],
-					    posFirstT=posSnake[0][1];
-					if(posFirstL == posFruitL && posFirstT == posFruitT){
+					if(posFruitL == posSnake[0][0] && posFruitT == posSnake[0][1]){
 						eatFruit(currDirection);
 					}
-				$('html').keyup(function(e){
-					move(e.which);
-					currDirection=e.which;
-				});//end keyup
+					move(currDirection);
 				}else{
 					alert('FAIL');
 					clearInterval(gameOnGoing);
